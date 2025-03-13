@@ -1,0 +1,10 @@
+{
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": 6900
+  },
+  "exec": "node --inspect=localhost:9229 -r dotenv/config server.js",
+  "ignore": [".vscode", ".git", "build", "node_modules", "db.json"],
+  "restartable": "rs",
+  "verbose": true
+}

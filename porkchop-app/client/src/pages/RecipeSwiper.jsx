@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
-import { getCurrentUser, getRecipesByCriteria, logRecipeCooked } from '../lib/supabase';
+import { getCurrentUser, logRecipeCooked } from '../lib/supabase';
 import ChefFreddie from '../components/chef/ChefFreddie';
 
 const SwiperContainer = styled.div`

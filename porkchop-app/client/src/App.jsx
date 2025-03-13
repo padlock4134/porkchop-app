@@ -1,12 +1,14 @@
 // client/src/App.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import AuthPage from './pages/Auth';
+
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import RecipeSwiper from './pages/RecipeSwiper';
 import NavBar from './components/ui/NavBar';
+import LoadingSpinner from './components/ui/LoadingSpinner';
+import { useWristbandAuth } from './context/WristbandAuthProvider';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -26,16 +28,17 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// Wrapper component that conditionally renders the NavBar
+// Wrapper component that conditionally renders the Dashboard
 const AppLayout = ({ children }) => {
-  const location = useLocation();
-  const isAuthPage = location.pathname === '/auth';
+  const { isAuthenticated } = useWristbandAuth();
   
-  return (
+  return isAuthenticated ? (
     <>
-      {!isAuthPage && <NavBar />}
+      <NavBar />
       {children}
     </>
+  ) : (
+    <LoadingSpinner />
   );
 };
 
@@ -45,8 +48,7 @@ const App = () => {
       <GlobalStyle />
       <AppLayout>
         <Routes>
-          <Route path="/" element={<Navigate to="/auth" replace />} />
-          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/recipes" element={<RecipeSwiper />} />
