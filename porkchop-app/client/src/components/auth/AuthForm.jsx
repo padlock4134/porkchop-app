@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { signUp, signIn } from '../../lib/supabase';
 
 const FormContainer = styled.div`
   display: flex;
@@ -82,17 +83,48 @@ const AuthForm = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-// In AuthForm.jsx, modify the handleSubmit function
+  // Store if user is new to determine redirection
+  const [isNewUser, setIsNewUser] = useState(false);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
-    // Skip all authentication for now and just navigate
-    console.log("Bypassing authentication and going to dashboard");
-    navigate('/dashboard');
-    
-    // This bypasses the authentication process entirely
-    // We can fix the actual authentication later
+    try {
+      if (isLogin) {
+        // Handle login
+        const { data, error: signInError } = await signIn(email, password);
+        
+        if (signInError) {
+          throw signInError;
+        }
+        
+        if (data && data.user) {
+          // Existing user, redirect to dashboard
+          navigate('/dashboard');
+        }
+      } else {
+        // Handle signup
+        const { data, error: signUpError } = await signUp(email, password);
+        
+        if (signUpError) {
+          throw signUpError;
+        }
+        
+        if (data && data.user) {
+          // New user, redirect to pricing page
+          setIsNewUser(true);
+          
+          // For demo: Set session storage to indicate new user for pricing page
+          sessionStorage.setItem('newUser', 'true');
+          
+          navigate('/pricing');
+        }
+      }
+    } catch (err) {
+      console.error('Authentication error:', err);
+      setError(err.message || 'Authentication failed. Please try again.');
+    }
   };
 
   return (

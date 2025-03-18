@@ -6,6 +6,7 @@ import { createGlobalStyle } from 'styled-components';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import RecipeSwiper from './pages/RecipeSwiper';
+import PricingPage from './pages/PricingPage';
 import NavBar from './components/ui/NavBar';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { useWristbandAuth } from './context/WristbandAuthProvider';
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/recipes" element={<RecipeSwiper />} />
+          <Route path="/pricing" element={<PricingPage />} />
         </Routes>
       </AppLayout>
     </Router>
