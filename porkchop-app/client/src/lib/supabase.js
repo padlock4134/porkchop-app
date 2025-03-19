@@ -7,18 +7,27 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'your-anon-ke
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Authentication helper functions with mocked data for development
-export const signUp = async (email, password) => {
+export const signUp = async (email, password, metadata = {}) => {
   try {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: metadata // Include user metadata like first_name, last_name
+      }
     });
     return { data, error };
   } catch (err) {
     console.error('Error in signUp:', err);
     // For development only - return mock successful signup
     return { 
-      data: { user: { id: 'mock-user-id', email } },
+      data: { 
+        user: { 
+          id: 'mock-user-id', 
+          email,
+          user_metadata: metadata // Include the metadata in the mock response
+        }
+      },
       error: null
     };
   }
@@ -54,10 +63,26 @@ export const signOut = async () => {
 export const getCurrentUser = async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    return user || { id: 'mock-user-id', email: 'dev@example.com' }; // Return mock user if none exists
+    
+    // Return user with metadata or a more detailed mock user if none exists
+    return user || { 
+      id: 'mock-user-id', 
+      email: 'dev@example.com',
+      user_metadata: {
+        first_name: 'Dev',
+        last_name: 'User'
+      }
+    };
   } catch (err) {
     console.error('Error in getCurrentUser:', err);
-    return { id: 'mock-user-id', email: 'dev@example.com' };
+    return { 
+      id: 'mock-user-id', 
+      email: 'dev@example.com',
+      user_metadata: {
+        first_name: 'Dev',
+        last_name: 'User'
+      }
+    };
   }
 };
 

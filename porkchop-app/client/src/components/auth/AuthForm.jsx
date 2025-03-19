@@ -14,7 +14,7 @@ const FormContainer = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   background-color: #fff;
-  font-family: 'Comic Sans MS', cursive, sans-serif; /* Steamboat Willie inspired */
+  font-family: 'Comic Sans MS', cursive, sans-serif;
 `;
 
 const Title = styled.h2`
@@ -37,6 +37,13 @@ const Input = styled.input`
     border-color: #333;
     outline: none;
   }
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
 `;
 
 const Button = styled.button`
@@ -80,11 +87,10 @@ const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // Store if user is new to determine redirection
-  const [isNewUser, setIsNewUser] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,17 +110,23 @@ const AuthForm = () => {
           navigate('/dashboard');
         }
       } else {
-        // Handle signup
-        const { data, error: signUpError } = await signUp(email, password);
+        // Validation for signup
+        if (!firstName.trim() || !lastName.trim()) {
+          setError('First name and last name are required');
+          return;
+        }
+        
+        // Handle signup with additional user metadata
+        const { data, error: signUpError } = await signUp(email, password, {
+          first_name: firstName,
+          last_name: lastName
+        });
         
         if (signUpError) {
           throw signUpError;
         }
         
         if (data && data.user) {
-          // New user, redirect to pricing page
-          setIsNewUser(true);
-          
           // For demo: Set session storage to indicate new user for pricing page
           sessionStorage.setItem('newUser', 'true');
           
@@ -134,6 +146,25 @@ const AuthForm = () => {
       {error && <ErrorMessage>{error}</ErrorMessage>}
       
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+        {!isLogin && (
+          <InputGroup>
+            <Input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required={!isLogin}
+            />
+            <Input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required={!isLogin}
+            />
+          </InputGroup>
+        )}
+        
         <Input
           type="email"
           placeholder="Email"

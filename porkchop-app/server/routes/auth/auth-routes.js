@@ -22,7 +22,7 @@ authRoutes.get('/login', async (req, res, next) => {
 // Register route - for direct API registration without Wristband
 authRoutes.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, firstName, lastName } = req.body;
     
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -39,10 +39,16 @@ authRoutes.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'User already exists' });
     }
     
-    // Create user in Supabase
+    // Create user in Supabase with metadata
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName
+        }
+      }
     });
     
     if (error) {
@@ -55,6 +61,8 @@ authRoutes.post('/register', async (req, res) => {
       .insert({
         id: data.user.id,
         email: email,
+        first_name: firstName,
+        last_name: lastName,
         created_at: new Date(),
         updated_at: new Date(),
         is_new_user: true, // Flag to identify new users for pricing page
@@ -80,7 +88,9 @@ authRoutes.post('/register', async (req, res) => {
       success: true, 
       user: { 
         id: data.user.id, 
-        email: data.user.email 
+        email: data.user.email,
+        firstName,
+        lastName
       },
       isNewUser: true,
       redirectTo: '/pricing'
@@ -130,11 +140,17 @@ authRoutes.get('/callback', async (req, res, next) => {
     if (!userData || userData.is_new_user) {
       // If user doesn't exist in our database yet, create them
       if (!userData) {
+        // Extract first_name and last_name from user info if available
+        const firstName = callbackData.userinfo.given_name || '';
+        const lastName = callbackData.userinfo.family_name || '';
+        
         const { error: userError } = await supabase
           .from('users')
           .insert({
             id: callbackData.userinfo.sub,
             email: callbackData.userinfo.email,
+            first_name: firstName,
+            last_name: lastName,
             created_at: new Date(),
             updated_at: new Date(),
             is_new_user: true,

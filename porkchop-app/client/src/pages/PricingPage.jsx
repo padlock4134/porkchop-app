@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCurrentUser } from '../lib/supabase';
-import { backendApiClient } from '../api/backend-api-client';
+import { backendApiClient } from '../api/backend-api-client.ts';
 
 const PricingContainer = styled.div`
   max-width: 1200px;
@@ -279,31 +279,11 @@ const PricingPage = () => {
       )}
       
       <PlansContainer>
-        <PlanCard>
-          <PlanName>Free</PlanName>
-          <PlanPrice>
-            <Price>$0</Price>
-            <PriceDetail>/month</PriceDetail>
-          </PlanPrice>
-          <FeaturesList>
-            <Feature>Basic recipe suggestions</Feature>
-            <Feature>Save up to 5 favorite recipes</Feature>
-            <Feature>Standard ingredients database</Feature>
-            <Feature>Basic meal planning</Feature>
-          </FeaturesList>
-          <SelectButton 
-            onClick={() => handleSelectPlan('free')}
-            disabled={selectedPlan === 'free'}
-          >
-            {selectedPlan === 'free' ? 'Selected' : 'Select Plan'}
-          </SelectButton>
-        </PlanCard>
-        
         <PlanCard popular>
           <PopularBadge>MOST POPULAR</PopularBadge>
-          <PlanName>Pro</PlanName>
+          <PlanName>Rare</PlanName>
           <PlanPrice>
-            <Price>$7.99</Price>
+            <Price>$9.99</Price>
             <PriceDetail>/month</PriceDetail>
           </PlanPrice>
           <FeaturesList>
@@ -324,9 +304,9 @@ const PricingPage = () => {
         </PlanCard>
         
         <PlanCard>
-          <PlanName>Family</PlanName>
+          <PlanName>El Dente</PlanName>
           <PlanPrice>
-            <Price>$12.99</Price>
+            <Price>$19.99</Price>
             <PriceDetail>/month</PriceDetail>
           </PlanPrice>
           <FeaturesList>
